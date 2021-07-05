@@ -49,3 +49,6 @@ jobs:
           cat /tmp/kube.config
         env:
           KUBECONFIG_FILE: ${{ secrets.TEST_FILE }}
+          
+      - name: file test
+        run: cat /tmp/kube.config

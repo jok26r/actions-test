@@ -56,8 +56,8 @@ jobs:
         env:
           KUBECONFIG_FILE: ${{ secrets.TEST_FILE }}
           
-      - name: file test
-        run: cat $KUBECONFIG_FILE_PATH
+      - name: Env vars
+        run: set
         
       - name: helm
         run: |

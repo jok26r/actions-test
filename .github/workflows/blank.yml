@@ -17,7 +17,7 @@ on:
       env-to-dep:
         description: 'env-to-dep'
         required: false
-        default: 'TEST'
+        default: 'test'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -26,7 +26,8 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-      test_file_secret_name: '${{ github.event.inputs.env-to-dep }}_FILE'
+      ENV_NAME: '${{ github.event.inputs.env-to-dep }}'
+      SECRET_SUFFIXES: 'FILE ANOTHER_FILE'
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,6 +35,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Set all secret names
+        run: |
+          for suffix in ${SECRET_SUFFIXES[@]}
+          do
+            echo "${suffix}_VARIABLE_NAME=${ENV_NAME^^}_${suffix}" >> ${GITHUB_ENV}
+          done
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -43,10 +50,12 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         env:
-          FILE_CONTENT: ${{ secrets[env.test_file_secret_name] }}
+          FILE_CONTENT: ${{ secrets[env.FILE_VARIABLE_NAME] }}
+          ANOTHER_FILE_CONTENT: ${{ secrets[env.ANOTHER_FILE_VARIABLE_NAME] }}
         run: |
           set
           echo $FILE_CONTENT | base64 -d
+          echo $ANOTHER_FILE_CONTENT
           
   deploy:
     environment: test

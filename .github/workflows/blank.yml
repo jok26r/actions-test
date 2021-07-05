@@ -41,10 +41,11 @@ jobs:
           
   deploy:
     environment: test
-      steps:
-        - name: file
-          run: |
-            echo "$KUBECONFIG_FILE" > /tmp/kube.config
-            cat /tmp/kube.config
-          env:
-            KUBECONFIG_FILE: ${{ secrets.TEST_FILE }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: file
+        run: |
+          echo "$KUBECONFIG_FILE" > /tmp/kube.config
+          cat /tmp/kube.config
+        env:
+          KUBECONFIG_FILE: ${{ secrets.TEST_FILE }}

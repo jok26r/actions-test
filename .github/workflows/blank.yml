@@ -35,6 +35,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          
+      - name: github ips
+        run: |
+          curl \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://github.com/api/v3/meta
       - name: Set all secret names
         run: |
           for suffix in ${SECRET_SUFFIXES[@]}

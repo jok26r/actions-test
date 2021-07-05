@@ -44,15 +44,21 @@ jobs:
           set
           
   deploy:
-    environment: ${{ github.event.inputs.env-to-dep }}
+    environment: test
     runs-on: ubuntu-latest
+    env:
+      KUBECONFIG_FILE_PATH: /tmp/kube.config
     steps:
       - name: file
         run: |
-          echo "$KUBECONFIG_FILE" | base64 -d > /tmp/kube.config
-          cat /tmp/kube.config
+          echo "$KUBECONFIG_FILE" | base64 -d > $KUBECONFIG_FILE_PATH
+          cat $KUBECONFIG_FILE_PATH
         env:
           KUBECONFIG_FILE: ${{ secrets.TEST_FILE }}
           
       - name: file test
-        run: cat /tmp/kube.config
+        run: cat $KUBECONFIG_FILE_PATH
+        
+      - name: helm
+        run: |
+          helm version

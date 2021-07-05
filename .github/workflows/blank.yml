@@ -16,10 +16,8 @@ on:
     inputs:
       env-to-dep:
         description: 'env-to-dep'
-        required: true
-        default: $DEFAULT-ENV-TO-DEP
-env:
-  default-env-to-dep: 'test'
+        required: false
+        default: 'test'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

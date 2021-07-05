@@ -45,7 +45,7 @@ jobs:
     steps:
       - name: file
         run: |
-          echo "$KUBECONFIG_FILE" > /tmp/kube.config
+          echo "$KUBECONFIG_FILE" | base64 -d > /tmp/kube.config
           cat /tmp/kube.config
         env:
           KUBECONFIG_FILE: ${{ secrets.TEST_FILE }}

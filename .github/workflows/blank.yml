@@ -27,7 +27,6 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-      ENV_NAME: '${{ github.event.inputs.env-to-dep }}'
       SECRET_SUFFIXES: 'FILE ANOTHER_FILE'
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -37,22 +36,35 @@ jobs:
         with:
           fetch-depth: 0
           
-      - name: github ips
-        run: |
-          curl \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/meta
+      -   name: Set ENV_NAME env variable
+          run: |
+            if [[ "$GITHUB_EVENT_NAME" == 'workflow_dispatch' ]]; then
+                echo "ENV_NAME=${{github.event.inputs.environment-to-deploy}}" >> ${GITHUB_ENV}
+            else
+                if [[ "$GITHUB_EVENT_NAME" == 'push' ]]; then
+                    ref_without_ref_heads=${GITHUB_REF#ref/heads/}
+                    ref_with_dashes=${ref_without_ref_heads//\//-}
+                elif [[ "$GITHUB_EVENT_NAME" == 'pull_request' ]]; then
+                    ref_with_dashes=${GITHUB_HEAD_REF//\//-}
+                else
+                    echo "Environment name variable wasn't set because such github.event_name $GITHUB_EVENT_NAME is not processed in the workflow"
+                    exit 1
+                fi
+
+                echo "ref_with_dashes value - $ref_with_dashes"
+                if [[ $ref_with_dashes == 'test-jok26r-patch-2' ]]; then
+                  env_name='test'
+                else
+                  env_name='dev'
+                fi
+                [[ -n $env_name ]] && echo "ENV_NAME=env_name" >> ${GITHUB_ENV} || exit 1
+            fi
       - name: Set all secret names
         run: |
           for suffix in ${SECRET_SUFFIXES[@]}
           do
             echo "${suffix}_VARIABLE_NAME=${ENV_NAME^^}_${suffix}" >> ${GITHUB_ENV}
           done
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: |
-          git tag -l -n9
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
@@ -63,23 +75,3 @@ jobs:
           set
           echo $FILE_CONTENT | base64 -d
           echo $ANOTHER_FILE_CONTENT
-          
-  deploy:
-    environment: test
-    runs-on: ubuntu-latest
-    env:
-      KUBECONFIG_FILE_PATH: /tmp/kube.config
-    steps:
-      - name: file
-        run: |
-          echo "$KUBECONFIG_FILE" | base64 -d > $KUBECONFIG_FILE_PATH
-          cat $KUBECONFIG_FILE_PATH
-        env:
-          KUBECONFIG_FILE: ${{ secrets.TEST_FILE }}
-          
-      - name: Env vars
-        run: set
-        
-      - name: helm
-        run: |
-          helm version

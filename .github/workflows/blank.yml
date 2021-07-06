@@ -57,7 +57,7 @@ jobs:
                 else
                   env_name='dev'
                 fi
-                [[ -n $env_name ]] && echo "ENV_NAME=env_name" >> ${GITHUB_ENV} || exit 1
+                [[ -n $env_name ]] && echo "ENV_NAME=$env_name" >> ${GITHUB_ENV} || exit 1
             fi
       - name: Set all secret names
         run: |

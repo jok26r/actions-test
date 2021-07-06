@@ -42,7 +42,7 @@ jobs:
                 echo "ENV_NAME=${{github.event.inputs.environment-to-deploy}}" >> ${GITHUB_ENV}
             else
                 if [[ "$GITHUB_EVENT_NAME" == 'push' ]]; then
-                    ref_without_ref_heads=${GITHUB_REF#ref/heads/}
+                    ref_without_ref_heads=${GITHUB_REF#refs/heads/}
                     ref_with_dashes=${ref_without_ref_heads//\//-}
                 elif [[ "$GITHUB_EVENT_NAME" == 'pull_request' ]]; then
                     ref_with_dashes=${GITHUB_HEAD_REF//\//-}

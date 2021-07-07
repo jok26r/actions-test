@@ -1,0 +1,38 @@
+name: "Set all needed environment variables"
+description: "Setting environment variables depending on workflow trigger event"
+runs:
+    using: "composite"
+    steps:
+    -   name: Prepare branch name
+        shell: bash
+        run: |
+            if [[ "$GITHUB_EVENT_NAME" == 'push' ]]; then
+                ref_name=${GITHUB_REF##*/}
+            elif [[ "$GITHUB_EVENT_NAME" == 'pull_request' ]]; then
+                ref_name=${GITHUB_HEAD_REF##*/}
+            else
+                echo "Branch name couldn't be set because such github.event_name $GITHUB_EVENT_NAME is not processed in the workflow"
+                exit 1
+            fi
+            
+            ref_lowercase=${ref_name,,}
+            echo "BRANCH_NAME=$ref_lowercase" >> ${GITHUB_ENV}
+        
+    -   name: Get version
+        shell: bash
+        run: |
+            version=`cat version.f | grep -oP '(?<=version = ")\d\.\d\.\d(?=")'`
+            echo "VERSION=$version" >> ${GITHUB_ENV}
+
+    -   name: Set environment variables for deployment
+        shell: bash
+        run: |
+            if [[ "$GITHUB_EVENT_NAME" == 'workflow_dispatch' ]]; then
+                echo "ENV_NAME=${{github.event.inputs.environment-to-deploy}}" >> ${GITHUB_ENV}
+                echo "IMAGE_TAG=${{ github.event.inputs.docker-image-tag }}" >> ${GITHUB_ENV}
+            else
+                image_tag="${VERSION}-${BRANCH_NAME}-SNAPSHOT"
+
+                echo "Image tag is $image_tag"
+                echo "IMAGE_TAG=$image_tag" >> ${GITHUB_ENV}
+            fi

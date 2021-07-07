@@ -59,6 +59,7 @@ jobs:
                 fi
                 [[ -n $env_name ]] && echo "ENV_NAME=$env_name" >> ${GITHUB_ENV} || exit 1
             fi
+      - uses: ./.github/actions/set-vars
       - name: Set all secret names
         run: |
           for suffix in ${SECRET_SUFFIXES[@]}

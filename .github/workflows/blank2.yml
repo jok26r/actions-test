@@ -5,10 +5,13 @@ on:
             in1:
                 required: true
                 default: 'test'
+            in2:
+                required: true
+                default: 'test2'
 jobs:
     dummy:
         name: dummy
         runs-on: ubuntu-latest
         steps:
         -   name: Print input
-            run: echo "$${{github.event.inputs.in1}}"
+            run: echo "${{github.event.inputs.in1}} ${{github.event.inputs.in2}}"

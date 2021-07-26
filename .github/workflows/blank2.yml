@@ -2,9 +2,8 @@ name: Test
 on:
     workflow_dispatch:
 jobs:
-    dummy:
-        name: dummy
+    placeholder-job:
         runs-on: ubuntu-latest
         steps:
-        -   name: Print input
-            run: echo "${{github.event.inputs.in1}}"
+        -   name: Placeholder step
+            run: echo "Placeholder step"

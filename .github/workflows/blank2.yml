@@ -5,10 +5,10 @@ on:
             in1:
                 required: true
                 default: 'test'
-#jobs:
-#    dummy:
-#        name: dummy
-#        runs-on: ubuntu-latest
+jobs:
+    dummy:
+        name: dummy
+        runs-on: ubuntu-latest
 #        steps:
 #        -   name: Print input
 #            run: echo "$${{github.event.inputs.in1}}"

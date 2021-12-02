@@ -1,9 +1,0 @@
-name: Test
-on:
-    workflow_dispatch:
-jobs:
-    placeholder-job:
-        runs-on: ubuntu-latest
-        steps:
-        -   name: Placeholder step
-            run: echo "Placeholder step"
